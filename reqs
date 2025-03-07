@@ -1,0 +1,11 @@
+> pip install virtualenv
+
+> virtualenv env
+
+> pip install flask
+
+> Set-ExecutionPolicy unrestricted   # not required
+
+> env\Scripts\activate
+
+> sqlite3 is inbuilt
