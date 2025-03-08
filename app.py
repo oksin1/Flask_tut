@@ -49,6 +49,10 @@ init_db()
 
 @app.route("/")
 def hello():
+    page = request.args.get('page', 1, type=int)
+    per_page = 6
+    offset = (page - 1) * per_page
+
     conn = connect_db()
     cursor = conn.cursor()
     
@@ -58,8 +62,19 @@ def hello():
     cursor.execute("SELECT * FROM Todo")
     alltodos = cursor.fetchall()
 
-    conn.close()
-    return render_template('index.html', todos=todos, alltodos=alltodos) 
+    cursor.execute("SELECT COUNT(*) FROM Todo")
+    total_rows = cursor.fetchone()[0]
+
+    cursor.execute("SELECT * FROM Todo LIMIT ? OFFSET ?", (per_page, offset))
+    todoa = cursor.fetchall()
+
+    # print("what is this",total_rows)
+    total_pages = ( total_rows + per_page - 1) // per_page
+    conn.close()    
+
+    # return render_template("index.html", todos=todos, alltodos=alltodos, page=page, total_rows=total_rows, per_page=per_page)
+
+    return render_template('index.html', todos=todos, alltodos=alltodos, todoa=todoa, total_pages=total_pages, page=page) 
 #"Hello, World!"
 
 @app.route("/add-todo", methods=['POST'])
